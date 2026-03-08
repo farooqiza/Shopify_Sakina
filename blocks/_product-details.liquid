@@ -24,6 +24,10 @@
       </a>
     </div>
     {% content_for 'blocks' %}
+    {%- if request.page_type == 'product' -%}
+      {%- render 'urgency-stock', product: closest.product -%}
+      {%- render 'trust-badges' -%}
+    {%- endif -%}
   {% endcapture %}
 
   {% render 'group', children: children, settings: block_settings, shopify_attributes: block.shopify_attributes %}

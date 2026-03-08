@@ -1,0 +1,94 @@
+{%- doc -%}
+  Urgency / low stock messaging for product pages.
+  @param {object} product - The product object
+  @param {object} current_variant - The currently selected variant (optional; falls back to selected_or_first_available_variant)
+{%- enddoc -%}
+
+{%- liquid
+  assign variant = current_variant | default: product.selected_or_first_available_variant
+  assign inventory_qty = variant.inventory_quantity
+  assign inventory_policy = variant.inventory_policy
+  assign inventory_management = variant.inventory_management
+
+  assign show_urgency = false
+  assign urgency_level = ''
+
+  if inventory_management == 'shopify' and inventory_policy == 'deny'
+    if inventory_qty > 0 and inventory_qty <= 3
+      assign show_urgency = true
+      assign urgency_level = 'critical'
+    elsif inventory_qty > 3 and inventory_qty <= 8
+      assign show_urgency = true
+      assign urgency_level = 'low'
+    endif
+  endif
+-%}
+
+{%- if show_urgency -%}
+  <div
+    class="urgency-stock urgency-stock--{{ urgency_level }}"
+    data-product-id="{{ product.id }}"
+    data-variant-id="{{ variant.id }}"
+    aria-live="polite"
+  >
+    <span class="urgency-stock__dot" aria-hidden="true"></span>
+    <span class="urgency-stock__text">
+      {%- if urgency_level == 'critical' -%}
+        {%- if inventory_qty == 1 -%}
+          Only 1 left — order soon
+        {%- else -%}
+          Only {{ inventory_qty }} left in stock
+        {%- endif -%}
+      {%- else -%}
+        Low stock — {{ inventory_qty }} remaining
+      {%- endif -%}
+    </span>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .urgency-stock {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-block: 4px 8px;
+  }
+
+  .urgency-stock__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: urgency-pulse 2s ease-in-out infinite;
+  }
+
+  .urgency-stock--critical .urgency-stock__dot {
+    background-color: #C0392B;
+  }
+
+  .urgency-stock--critical .urgency-stock__text {
+    color: #C0392B;
+  }
+
+  .urgency-stock--low .urgency-stock__dot {
+    background-color: #D97706;
+  }
+
+  .urgency-stock--low .urgency-stock__text {
+    color: #D97706;
+  }
+
+  @keyframes urgency-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .urgency-stock__dot {
+      animation: none;
+    }
+  }
+{% endstylesheet %}

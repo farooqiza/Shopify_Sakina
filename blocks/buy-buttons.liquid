@@ -229,6 +229,10 @@
             can_add_to_cart: can_add_to_cart,
             form_obj: form
           %}
+
+          {%- if request.page_type == 'product' -%}
+            {%- render 'wishlist-button', product: product -%}
+          {%- endif -%}
         </div>
       {%- endform -%}
     </product-form-component>

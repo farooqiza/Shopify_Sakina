@@ -1,0 +1,298 @@
+<div
+  id="email-popup"
+  class="email-popup"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="email-popup-headline"
+  hidden
+>
+  <div class="email-popup__backdrop" data-popup-close aria-hidden="true"></div>
+  <div class="email-popup__panel">
+    <button
+      type="button"
+      class="email-popup__close"
+      data-popup-close
+      aria-label="Close"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <div class="email-popup__image-col" aria-hidden="true"></div>
+
+    <div class="email-popup__content">
+      <p class="email-popup__eyebrow">Sakina Home</p>
+      <h2 id="email-popup-headline" class="email-popup__headline">
+        {{ settings.popup_headline | escape }}
+      </h2>
+      <p class="email-popup__subtext">
+        {{ settings.popup_subtext | escape }}
+      </p>
+      {%- if settings.popup_discount_text != blank -%}
+        <p class="email-popup__offer">{{ settings.popup_discount_text | escape }}</p>
+      {%- endif -%}
+
+      <form
+        class="email-popup__form"
+        action="/contact#contact_form"
+        method="post"
+        id="email-popup-form"
+        novalidate
+      >
+        <input type="hidden" name="form_type" value="customer">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="contact[tags]" value="newsletter,popup">
+
+        <div class="email-popup__field">
+          <label for="email-popup-input" class="visually-hidden">Email address</label>
+          <input
+            type="email"
+            id="email-popup-input"
+            name="contact[email]"
+            placeholder="Your email address"
+            autocomplete="email"
+            required
+            class="email-popup__input"
+          >
+          <button type="submit" class="email-popup__submit button">
+            Subscribe
+          </button>
+        </div>
+        <p class="email-popup__error" role="alert" hidden>Please enter a valid email address.</p>
+        <p class="email-popup__success" role="status" hidden>Thank you! Check your inbox for a welcome message.</p>
+      </form>
+
+      <p class="email-popup__privacy">
+        By subscribing you agree to receive marketing emails. Unsubscribe anytime.
+      </p>
+    </div>
+  </div>
+</div>
+
+{{ 'email-popup.js' | asset_url | script_tag }}
+
+<script>
+  (function () {
+    var COOKIE_NAME = 'sakina_popup_dismissed';
+    var DELAY_MS = {{ settings.popup_delay_seconds | times: 1000 }};
+    EmailPopup.init(COOKIE_NAME, DELAY_MS);
+  })();
+</script>
+
+{% stylesheet %}
+  .email-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .email-popup[hidden] {
+    display: none;
+  }
+
+  .email-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+  }
+
+  .email-popup__panel {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 720px;
+    width: 100%;
+    background: #FAFAF8;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+  }
+
+  .email-popup__image-col {
+    background: #2C1A0E;
+    background-image: linear-gradient(135deg, #512815 0%, #2C1A0E 60%, #1A0E05 100%);
+    min-height: 360px;
+  }
+
+  .email-popup__content {
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .email-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #1A1209;
+    z-index: 1;
+    transition: background 0.2s;
+  }
+
+  .email-popup__close:hover {
+    background: #fff;
+  }
+
+  .email-popup__eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #B8935A;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .email-popup__headline {
+    font-size: clamp(22px, 3vw, 30px);
+    line-height: 1.2;
+    margin: 0;
+    color: #1A1209;
+    font-family: var(--font-heading-family, inherit);
+  }
+
+  .email-popup__subtext {
+    font-size: 14px;
+    color: #5C4A3A;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .email-popup__offer {
+    font-size: 13px;
+    font-weight: 600;
+    color: #512815;
+    background: #F2EDE7;
+    padding: 8px 12px;
+    border-left: 3px solid #B8935A;
+    margin: 4px 0;
+  }
+
+  .email-popup__form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .email-popup__field {
+    display: flex;
+    gap: 8px;
+  }
+
+  .email-popup__input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid #C4B8AA;
+    background: #fff;
+    font-size: 14px;
+    color: #1A1209;
+    border-radius: 0;
+    outline: none;
+    min-width: 0;
+    transition: border-color 0.2s;
+  }
+
+  .email-popup__input:focus {
+    border-color: #512815;
+  }
+
+  .email-popup__submit {
+    padding: 12px 20px;
+    background: #2C1A0E;
+    color: #FAFAF8;
+    border: none;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .email-popup__submit:hover {
+    background: #512815;
+  }
+
+  .email-popup__error,
+  .email-popup__success {
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .email-popup__error {
+    color: #C0392B;
+  }
+
+  .email-popup__success {
+    color: #27AE60;
+  }
+
+  .email-popup__error[hidden],
+  .email-popup__success[hidden] {
+    display: none;
+  }
+
+  .email-popup__privacy {
+    font-size: 11px;
+    color: #9E8E7E;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  @media screen and (max-width: 600px) {
+    .email-popup__panel {
+      grid-template-columns: 1fr;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .email-popup__image-col {
+      display: none;
+    }
+
+    .email-popup__content {
+      padding: 36px 24px;
+    }
+
+    .email-popup__field {
+      flex-direction: column;
+    }
+
+    .email-popup__submit {
+      width: 100%;
+    }
+  }
+
+  @keyframes popup-fade-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .email-popup:not([hidden]) .email-popup__panel {
+    animation: popup-fade-in 0.3s ease-out;
+  }
+{% endstylesheet %}

@@ -2284,5 +2284,68 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Integrations",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Google Tag Manager"
+      },
+      {
+        "type": "text",
+        "id": "gtm_id",
+        "label": "GTM Container ID",
+        "info": "Enter your GTM container ID (e.g. GTM-XXXXXXX). Leave blank to disable."
+      },
+      {
+        "type": "header",
+        "content": "Email Popup"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_email_popup",
+        "label": "Enable email capture popup",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "popup_headline",
+        "label": "Popup headline",
+        "default": "Join the Sakina Home Family"
+      },
+      {
+        "type": "text",
+        "id": "popup_subtext",
+        "label": "Popup subtext",
+        "default": "Be the first to discover new arrivals and exclusive offers."
+      },
+      {
+        "type": "text",
+        "id": "popup_discount_text",
+        "label": "Discount incentive text",
+        "info": "e.g. Get 10% off your first order",
+        "default": ""
+      },
+      {
+        "type": "range",
+        "id": "popup_delay_seconds",
+        "label": "Trigger delay (seconds)",
+        "min": 5,
+        "max": 120,
+        "step": 5,
+        "default": 30
+      },
+      {
+        "type": "header",
+        "content": "Live Chat"
+      },
+      {
+        "type": "textarea",
+        "id": "live_chat_embed",
+        "label": "Live chat embed code",
+        "info": "Paste the embed script from Tidio, Gorgias, or your preferred live chat provider."
+      }
+    ]
   }
 ]

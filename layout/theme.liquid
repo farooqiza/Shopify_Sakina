@@ -14,6 +14,12 @@
       >
     {%- endif -%}
 
+    {%- if settings.gtm_id != blank -%}
+      <!-- Google Tag Manager -->
+      <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ settings.gtm_id }}');</script>
+      <!-- End Google Tag Manager -->
+    {%- endif -%}
+
     {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
     {% if settings.transition_to_main_product or settings.page_transition_enabled %}
       <link
@@ -39,6 +45,11 @@
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+    {%- if settings.gtm_id != blank -%}
+      <!-- Google Tag Manager (noscript) -->
+      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ settings.gtm_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+      <!-- End Google Tag Manager (noscript) -->
+    {%- endif -%}
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
       {% sections 'header-group' %}
@@ -132,5 +143,46 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {%- if settings.show_email_popup -%}
+      {% render 'email-popup' %}
+    {%- endif -%}
+
+    {%- if settings.live_chat_embed != blank -%}
+      {{ settings.live_chat_embed }}
+    {%- endif -%}
+
+    <script>
+      window.sakinaShop = {
+        currency: {{ cart.currency.iso_code | json }},
+        moneyFormat: {{ shop.money_format | json }},
+        customerId: {{ customer.id | json }},
+        customerEmail: {{ customer.email | json }}
+      };
+    </script>
+    {{ 'wishlist.js' | asset_url | script_tag }}
+
+    {%- if settings.gtm_id != blank -%}
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        {%- if request.page_type == 'product' -%}
+        dataLayer.push({
+          event: 'view_item',
+          ecommerce: {
+            currency: {{ cart.currency.iso_code | json }},
+            value: {{ product.selected_or_first_available_variant.price | money_without_currency | replace: ',', '' }},
+            items: [{
+              item_id: {{ product.selected_or_first_available_variant.sku | default: product.id | json }},
+              item_name: {{ product.title | json }},
+              item_brand: {{ product.vendor | json }},
+              item_category: {{ product.type | json }},
+              price: {{ product.selected_or_first_available_variant.price | money_without_currency | replace: ',', '' }},
+              quantity: 1
+            }]
+          }
+        });
+        {%- endif -%}
+      </script>
+    {%- endif -%}
   </body>
 </html>

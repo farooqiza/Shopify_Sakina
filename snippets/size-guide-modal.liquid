@@ -1,0 +1,192 @@
+{%- doc -%}
+  Size Guide Modal — triggered by a "Size Guide" link.
+  Content is loaded from the Shopify page with handle "size-guide" (create this page in Shopify admin).
+  Usage: {% render 'size-guide-modal' %}
+{%- enddoc -%}
+
+<button
+  type="button"
+  class="size-guide-link link"
+  id="size-guide-trigger"
+  aria-haspopup="dialog"
+  aria-controls="size-guide-dialog"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+  Size Guide
+</button>
+
+<div
+  id="size-guide-dialog"
+  class="size-guide-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="size-guide-title"
+  hidden
+>
+  <div class="size-guide-modal__backdrop" id="size-guide-backdrop"></div>
+  <div class="size-guide-modal__panel">
+    <div class="size-guide-modal__header">
+      <h2 id="size-guide-title" class="size-guide-modal__title">Size Guide</h2>
+      <button
+        type="button"
+        class="size-guide-modal__close"
+        id="size-guide-close"
+        aria-label="Close size guide"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="size-guide-modal__body rte" id="size-guide-body">
+      <p class="size-guide-modal__loading">Loading…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var trigger = document.getElementById('size-guide-trigger');
+  var dialog = document.getElementById('size-guide-dialog');
+  var backdrop = document.getElementById('size-guide-backdrop');
+  var closeBtn = document.getElementById('size-guide-close');
+  var body = document.getElementById('size-guide-body');
+  var loaded = false;
+
+  if (!trigger || !dialog) return;
+
+  function openDialog() {
+    dialog.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+    if (!loaded) loadContent();
+  }
+
+  function closeDialog() {
+    dialog.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+    trigger.focus();
+  }
+
+  function loadContent() {
+    loaded = true;
+    fetch('/pages/size-guide?view=modal', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function (r) { return r.text(); })
+      .then(function (html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        var content = doc.querySelector('.page-content, main, article, #page-content, .rte');
+        body.innerHTML = content ? content.innerHTML : html;
+      })
+      .catch(function () {
+        body.innerHTML = '<p>Size guide not found. Please create a page with handle <strong>size-guide</strong> in your Shopify admin.</p>';
+      });
+  }
+
+  trigger.addEventListener('click', openDialog);
+  backdrop.addEventListener('click', closeDialog);
+  closeBtn.addEventListener('click', closeDialog);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !dialog.hasAttribute('hidden')) closeDialog();
+  });
+})();
+</script>
+
+{% stylesheet %}
+  .size-guide-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: rgb(var(--color-foreground-rgb) / 0.7);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-block: 4px;
+    transition: color 0.2s;
+  }
+
+  .size-guide-link:hover {
+    color: var(--color-primary);
+  }
+
+  .size-guide-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .size-guide-modal[hidden] {
+    display: none;
+  }
+
+  .size-guide-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+  }
+
+  .size-guide-modal__panel {
+    position: relative;
+    background: #FAFAF8;
+    width: 100%;
+    max-width: 640px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  }
+
+  .size-guide-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #E8E3DC;
+    flex-shrink: 0;
+  }
+
+  .size-guide-modal__title {
+    margin: 0;
+    font-size: 18px;
+    font-family: var(--font-heading-family, inherit);
+    color: #1A1209;
+  }
+
+  .size-guide-modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #5C4A3A;
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+
+  .size-guide-modal__close:hover {
+    background: #F2EDE7;
+  }
+
+  .size-guide-modal__body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .size-guide-modal__loading {
+    color: #9E8E7E;
+    font-size: 14px;
+  }
+{% endstylesheet %}

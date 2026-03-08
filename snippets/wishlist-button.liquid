@@ -1,0 +1,79 @@
+{%- doc -%}
+  Wishlist heart button. Works with assets/wishlist.js and localStorage.
+  @param {object} product - The product object
+  @param {string} [class] - Additional CSS class
+{%- enddoc -%}
+
+{%- liquid
+  assign btn_class = 'wishlist-btn'
+  if class != blank
+    assign btn_class = btn_class | append: ' ' | append: class
+  endif
+-%}
+
+<button
+  type="button"
+  class="{{ btn_class }}"
+  data-wishlist-btn
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-image="{{ product.featured_image | image_url: width: 400 }}"
+  data-product-price="{{ product.price | money }}"
+  data-product-url="{{ product.url }}"
+  aria-label="Add {{ product.title | escape }} to wishlist"
+  aria-pressed="false"
+>
+  <span class="wishlist-btn__icon wishlist-btn__icon--empty" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+  </span>
+  <span class="wishlist-btn__icon wishlist-btn__icon--filled" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+  </span>
+  <span class="visually-hidden wishlist-btn__label"></span>
+</button>
+
+{% stylesheet %}
+  .wishlist-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: rgba(250, 250, 248, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #2C1A0E;
+    transition: color 0.2s, transform 0.15s, background 0.2s;
+    position: relative;
+  }
+
+  .wishlist-btn:hover {
+    background: #FAFAF8;
+    transform: scale(1.1);
+  }
+
+  .wishlist-btn__icon--filled {
+    display: none;
+    color: #C0392B;
+  }
+
+  .wishlist-btn[aria-pressed="true"] .wishlist-btn__icon--empty {
+    display: none;
+  }
+
+  .wishlist-btn[aria-pressed="true"] .wishlist-btn__icon--filled {
+    display: block;
+  }
+
+  @keyframes wishlist-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  .wishlist-btn--animating {
+    animation: wishlist-pop 0.3s ease-out;
+  }
+{% endstylesheet %}
