@@ -1,0 +1,242 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section
+  class="sakina-testimonials section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }}"
+  aria-labelledby="testimonials-heading-{{ section.id }}"
+>
+  <div class="sakina-testimonials__header">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="sakina-testimonials__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2 id="testimonials-heading-{{ section.id }}" class="sakina-testimonials__heading">
+        {{ section.settings.heading | escape }}
+      </h2>
+    {%- endif -%}
+    {%- if section.settings.subheading != blank -%}
+      <p class="sakina-testimonials__subheading">{{ section.settings.subheading | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div
+      class="sakina-testimonials__grid"
+      style="--review-cols: {{ section.settings.columns }};"
+    >
+      {%- for block in section.blocks -%}
+        <article class="sakina-review-card" {{ block.shopify_attributes }}>
+          {%- if block.settings.rating > 0 -%}
+            <div class="sakina-review-card__stars" aria-label="{{ block.settings.rating }} out of 5 stars">
+              {%- for i in (1..5) -%}
+                {%- if i <= block.settings.rating -%}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {%- else -%}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.quote != blank -%}
+            <blockquote class="sakina-review-card__quote">
+              {{ block.settings.quote | escape }}
+            </blockquote>
+          {%- endif -%}
+
+          <footer class="sakina-review-card__meta">
+            {%- if block.settings.name != blank -%}
+              <p class="sakina-review-card__name">{{ block.settings.name | escape }}</p>
+            {%- endif -%}
+            {%- if block.settings.location != blank -%}
+              <p class="sakina-review-card__location">{{ block.settings.location | escape }}</p>
+            {%- endif -%}
+            {%- if block.settings.product != blank -%}
+              <p class="sakina-review-card__product">{{ 'Purchased: ' }}{{ block.settings.product | escape }}</p>
+            {%- endif -%}
+          </footer>
+        </article>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.cta_label != blank and section.settings.cta_url != blank -%}
+    <div class="sakina-testimonials__cta">
+      <a href="{{ section.settings.cta_url }}" class="button button-secondary">
+        {{ section.settings.cta_label | escape }}
+      </a>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .sakina-testimonials__header {
+    text-align: center;
+    max-width: 640px;
+    margin-inline: auto;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+
+  .sakina-testimonials__subheading {
+    font-size: 15px;
+    line-height: 1.65;
+    opacity: 0.65;
+    margin-top: 12px;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+
+  .sakina-testimonials__grid {
+    grid-template-columns: repeat(var(--review-cols, 3), 1fr);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Customer Reviews",
+  "tag": "div",
+  "class": "sakina-section-reviews",
+  "disabled_on": { "groups": ["header", "footer"] },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow label",
+      "default": "Customer Stories"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Thousands of homes illuminated. Here are a few of our favourite stories."
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Read All Reviews"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "limit": 9,
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Review text",
+          "default": "Absolutely stunning piece. The quality exceeded every expectation — it looks even better in person than in the photos. My living room has been completely transformed."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Location",
+          "default": "London, UK"
+        },
+        {
+          "type": "text",
+          "id": "product",
+          "label": "Product purchased",
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Reviews",
+      "settings": {
+        "eyebrow": "Customer Stories",
+        "heading": "What Our Customers Say",
+        "subheading": "Thousands of homes illuminated. Here are a few of our favourite stories.",
+        "columns": 3,
+        "cta_label": "Read All Reviews",
+        "color_scheme": "scheme-1"
+      },
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "I've searched for months for the perfect statement piece and this is it. The craftsmanship is extraordinary and the warm light it casts is simply magical.",
+            "name": "Amelia T.",
+            "location": "Dubai, UAE",
+            "product": "Arched Floor Lamp"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "Sakina Home has completely changed how I think about lighting. The pendant we ordered arrived perfectly packaged, installation was straightforward, and the result is breathtaking.",
+            "name": "Priya K.",
+            "location": "London, UK",
+            "product": "Woven Pendant Light"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "quote": "Exceptional quality, fast delivery, and the customer service was outstanding. I'll be ordering again for our bedroom.",
+            "name": "James H.",
+            "location": "Toronto, Canada",
+            "product": "Marble Table Lamp"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -230,12 +230,14 @@
             form_obj: form
           %}
 
-          {%- if request.page_type == 'product' -%}
-            {%- render 'wishlist-button', product: product -%}
-          {%- endif -%}
         </div>
       {%- endform -%}
     </product-form-component>
+    {%- if request.page_type == 'product' -%}
+      {%- render 'urgency-stock', product: product -%}
+      {%- render 'wishlist-button', product: product -%}
+      {%- render 'trust-badges' -%}
+    {%- endif -%}
   {%- else -%}
     <div class="product-form-buttons">
       <button
